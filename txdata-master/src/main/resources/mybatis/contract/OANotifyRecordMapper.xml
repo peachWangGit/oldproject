@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.txdata.contract.dao.OANotifyRecordMapper">
+  <resultMap id="BaseResultMap" type="com.txdata.contract.domain.OANotifyRecord">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="notify_id" jdbcType="VARCHAR" property="notifyId" />
+    <result column="user_id" jdbcType="VARCHAR" property="userId" />
+    <result column="is_read" jdbcType="VARCHAR" property="isRead" />
+    <result column="read_date" jdbcType="TIMESTAMP" property="readDate" />
+  </resultMap>
+
+  <sql id="oANotifyRecordColumns">
+      id, notify_id, user_id, is_read, read_date
+  </sql>
+
+  <!--通过主键删除-->
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from oa_notify_record
+    where id = #{id}
+  </delete>
+  <!--新增-->
+  <insert id="insert" parameterType="com.txdata.contract.domain.OANotifyRecord">
+    insert into oa_notify_record (
+    <include refid="oANotifyRecordColumns" />
+    )
+    values (#{id}, #{notifyId}, #{userId}, #{isRead}, #{readDate})
+  </insert>
+  <!--更新-->
+  <update id="updateByPrimaryKey" parameterType="com.txdata.contract.domain.OANotifyRecord">
+    update oa_notify_record
+    set notify_id = #{notifyId},
+      user_id = #{userId},
+      is_read = #{isRead},
+      read_date = #{readDate}
+    where id = #{id}
+  </update>
+  <!--通过主键查询-->
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="oANotifyRecordColumns" />
+    from oa_notify_record
+    where id = #{id}
+  </select>
+<!--通过通知id和userID，可以查到唯一对应的 通知通告发送记录-->
+  <select id="selectByNotifyIdAndUserId" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+      <include refid="oANotifyRecordColumns" />
+    from oa_notify_record
+    where notify_id = #{notifyId} and user_id = #{userId}
+  </select>
+<!--查询所有-->
+  <select id="selectAll" resultMap="BaseResultMap">
+    select
+      <include refid="oANotifyRecordColumns" />
+    from oa_notify_record
+  </select>
+</mapper>

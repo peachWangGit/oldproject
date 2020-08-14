@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:tns="http://bpmn.io/schema/bpmn" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" expressionLanguage="http://www.w3.org/1999/XPath" id="Definitions_0mehbmi" name="" targetNamespace="http://bpmn.io/schema/bpmn" typeLanguage="http://www.w3.org/2001/XMLSchema">
+  <bpmn:process id="myProcess" isClosed="false" isExecutable="true" name="myProcess" processType="None">
+    <bpmn:startEvent id="isStart" name="start"/>
+    <bpmn:sequenceFlow id="isBegin" name="begin" sourceRef="isStart" targetRef="WorkerTask"/>
+    <bpmn:sequenceFlow id="workerAndbusiness" name="workerToBusiness" sourceRef="WorkerTask" targetRef="BusinessAuditTask"/>
+    <bpmn:sequenceFlow id="businessAndcontract" name="businessToContract" sourceRef="BusinessAuditTask" targetRef="ContractAuditTask">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression"><![CDATA[${businessFlag =='submit' && sealFlag=='0'}]]></bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="contractAndseal" name="contractToSeal" sourceRef="ContractAuditTask" targetRef="ContractSealTask">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression"><![CDATA[${contractFlag=='submit' && sealFlag=='0'}]]></bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:endEvent id="isEnd" name="end"/>
+    <bpmn:sequenceFlow id="isOver" name="over" sourceRef="ContractSealTask" targetRef="isEnd"/>
+    <bpmn:userTask activiti:exclusive="true" id="WorkerTask" name="Worker"/>
+    <bpmn:userTask activiti:assignee="businessAuditor" activiti:exclusive="true" camunda:assignee="businessAuditor" id="BusinessAuditTask" name="businessAudit"/>
+    <bpmn:userTask activiti:assignee="contractAuditor" activiti:exclusive="true" camunda:assignee="contractAuditor" id="ContractAuditTask" name="contractAudit"/>
+    <bpmn:userTask activiti:assignee="contractSealer" activiti:exclusive="true" camunda:assignee="contractSealer" id="ContractSealTask" name="contractSeal"/>
+    <bpmn:sequenceFlow id="BusinessNotPass" name="BusinessNoPass" sourceRef="BusinessAuditTask" targetRef="WorkerTask">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression"><![CDATA[${businessFlag!="submit"}]]></bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="contractNotpass" name="contractNoPass" sourceRef="ContractAuditTask" targetRef="WorkerTask">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression"><![CDATA[${contractFlag!="submit"}]]></bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram documentation="background=#FFFFFF;count=1;horizontalcount=2;orientation=0;width=842.4;height=1195.2;imageableWidth=832.4;imageableHeight=1185.2;imageableX=5.0;imageableY=5.0" id="Diagram-_1" name="New Diagram">
+    <bpmndi:BPMNPlane bpmnElement="myProcess">
+      <bpmndi:BPMNShape bpmnElement="isStart" id="Shape-isStart">
+        <dc:Bounds height="32.0" width="32.0" x="179.0" y="249.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="32.0" width="32.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="isEnd" id="Shape-isEnd">
+        <dc:Bounds height="32.0" width="32.0" x="1212.0" y="249.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="32.0" width="32.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="WorkerTask" id="Shape-WorkerTask">
+        <dc:Bounds height="80.0" width="100.0" x="270.0" y="227.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="80.0" width="100.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="BusinessAuditTask" id="Shape-BusinessAuditTask">
+        <dc:Bounds height="80.0" width="100.0" x="510.0" y="227.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="80.0" width="100.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ContractAuditTask" id="Shape-ContractAuditTask">
+        <dc:Bounds height="80.0" width="100.0" x="750.0" y="227.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="80.0" width="100.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ContractSealTask" id="Shape-ContractSealTask">
+        <dc:Bounds height="80.0" width="100.0" x="950.0" y="227.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="80.0" width="100.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="isBegin" id="BPMNEdge_isBegin" sourceElement="isStart" targetElement="WorkerTask">
+        <di:waypoint x="211.0" y="265.0"/>
+        <di:waypoint x="270.0" y="267.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="14.0" width="27.0" x="229.0" y="249.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="businessAndcontract" id="BPMNEdge_businessAndcontract" sourceElement="BusinessAuditTask" targetElement="ContractAuditTask">
+        <di:waypoint x="610.0" y="267.0"/>
+        <di:waypoint x="750.0" y="267.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="27.0" width="89.0" x="637.0" y="249.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="BusinessNotPass" id="BPMNEdge_BusinessNotPass" sourceElement="BusinessAuditTask" targetElement="WorkerTask">
+        <di:waypoint x="550.0" y="227.0"/>
+        <di:waypoint x="550.0" y="100.0"/>
+        <di:waypoint x="320.0" y="100.0"/>
+        <di:waypoint x="320.0" y="227.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="14.0" width="84.0" x="393.0" y="82.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="workerAndbusiness" id="BPMNEdge_workerAndbusiness" sourceElement="WorkerTask" targetElement="BusinessAuditTask">
+        <di:waypoint x="370.0" y="267.0"/>
+        <di:waypoint x="510.0" y="267.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="14.0" width="89.0" x="397.0" y="249.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="contractNotpass" id="BPMNEdge_contractNotpass" sourceElement="ContractAuditTask" targetElement="WorkerTask">
+        <di:waypoint x="800.0" y="307.0"/>
+        <di:waypoint x="800.0" y="450.0"/>
+        <di:waypoint x="320.0" y="450.0"/>
+        <di:waypoint x="320.0" y="307.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="14.0" width="79.0" x="521.0" y="432.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="isOver" id="BPMNEdge_isOver" sourceElement="ContractSealTask" targetElement="isEnd">
+        <di:waypoint x="1050.0" y="267.0"/>
+        <di:waypoint x="1212.0" y="265.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="14.0" width="23.0" x="1079.0" y="250.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="contractAndseal" id="BPMNEdge_contractAndseal" sourceElement="ContractAuditTask" targetElement="ContractSealTask">
+        <di:waypoint x="850.0" y="267.0"/>
+        <di:waypoint x="950.0" y="267.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="14.0" width="74.0" x="863.0" y="249.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

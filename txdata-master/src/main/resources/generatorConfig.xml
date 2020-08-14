@@ -1,0 +1,29 @@
+<!DOCTYPE generatorConfiguration PUBLIC
+        "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<generatorConfiguration>
+    <context id="simple" targetRuntime="MyBatis3Simple">
+        
+        <commentGenerator>
+            <!--  删除所有注释 -->
+            <property name="suppressAllComments" value="true"></property>
+        </commentGenerator>
+        
+        <jdbcConnection driverClass="com.mysql.cj.jdbc.Driver"
+                        connectionURL="jdbc:mysql://localhost:3306/txdata?serverTimezone=Hongkong&amp;useUnicode=true&amp;characterEncoding=utf8&amp;useSSL=false&amp;nullCatalogMeansCurrent=true"
+                        userId="root" password="root"
+        />
+
+        <javaModelGenerator targetPackage="com.txdata.contract.domain" targetProject="src/main/java"/>
+
+        <sqlMapGenerator targetPackage="mybatis.contract" targetProject="src/main/resources"/>
+
+        <javaClientGenerator type="XMLMAPPER" targetPackage="com.txdata.contract.dao" targetProject="src/main/java"/>
+
+        <!--<table tableName="contract_reg_info" mapperName="ContractRegInfoMapper" domainObjectName="ContractRegInfo" />
+        <table tableName="pay_type" mapperName="Pay_typeMapper" domainObjectName="Pay_type" />
+        <table tableName="receive_amount" mapperName="Receive_amountMapper" domainObjectName="Receive_amount"/>-->
+        <table tableName="oa_notify_record" mapperName="OANotifyRecordMapper" domainObjectName="OANotifyRecord"/>
+        <table tableName="oa_notify" mapperName="OANotifyMapper" domainObjectName="OANotify"/>
+    </context>
+</generatorConfiguration>

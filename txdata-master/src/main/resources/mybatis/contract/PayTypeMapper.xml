@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.txdata.contract.dao.PayTypeMapper">
+  <resultMap id="BaseResultMap" type="com.txdata.contract.domain.PayType">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="cid" jdbcType="VARCHAR" property="cid" />
+    <result column="period_times" jdbcType="VARCHAR" property="periodTimes" />
+    <result column="pay_money" jdbcType="DECIMAL" property="payMoney" />
+    <result column="pay_condition" jdbcType="VARCHAR" property="payCondition" />
+    <result column="other_condition" jdbcType="VARCHAR" property="otherCondition" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="del_flag" jdbcType="VARCHAR" property="delFlag" />
+  </resultMap>
+
+  <sql id="payTypeColumns">
+      id, cid, period_times,
+      pay_money, pay_condition, other_condition,
+      remark,del_flag
+  </sql>
+
+<!--主键物理删除-->
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from pay_type
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+<!--通过合同id删除-->
+  <delete id="deleteByCid" parameterType="java.lang.String">
+    delete from pay_type
+    where cid = #{cid}
+  </delete>
+<!--新增付款方式-->
+  <insert id="insert" parameterType="com.txdata.contract.domain.PayType">
+    insert into pay_type (
+    <include refid="payTypeColumns" />
+    )
+    values (#{id}, #{cid}, #{periodTimes},
+      #{payMoney}, #{payCondition}, #{otherCondition},
+      #{remark},#{delFlag})
+  </insert>
+<!--通过主键修改-->
+  <update id="updateByPrimaryKey" parameterType="com.txdata.contract.domain.PayType">
+    update pay_type
+    set cid = #{cid},
+      period_times = #{periodTimes},
+      pay_money = #{payMoney},
+      pay_condition = #{payCondition},
+      other_condition = #{otherCondition},
+      remark = #{remark},
+      del_flag=#{delFlag}
+    where id = #{id}
+  </update>
+  <!--通过主键查询-->
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+      <include refid="payTypeColumns" />
+    from pay_type
+    where id = #{id}
+  </select>
+<!--通过合同id查询付款方式-->
+  <select id="selectByCid" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+      <include refid="payTypeColumns" />
+    from pay_type
+    where cid = #{cid}
+  </select>
+
+  <!--查询所有-->
+  <select id="selectAll" resultMap="BaseResultMap">
+    select
+    <include refid="payTypeColumns" />
+    from pay_type
+  </select>
+</mapper>

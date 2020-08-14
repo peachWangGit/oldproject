@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.txdata.contract.dao.OANotifyMapper">
+  <resultMap id="BaseResultMap" type="com.txdata.contract.domain.OANotify">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="type" jdbcType="CHAR" property="type" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="files" jdbcType="VARCHAR" property="files" />
+    <result column="status" jdbcType="CHAR" property="status" />
+    <result column="create_by" jdbcType="VARCHAR" property="createBy" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="update_by" jdbcType="VARCHAR" property="updateBy" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+    <result column="remarks" jdbcType="VARCHAR" property="remarks" />
+    <result column="del_flag" jdbcType="CHAR" property="delFlag" />
+  </resultMap>
+
+  <sql id="oANotifyColumns">
+      id, type, title,
+      content, files, status,
+      create_by, create_date, update_by,
+      update_date, remarks, del_flag
+  </sql>
+
+<!--删除-->
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from oa_notify
+    where id = #{id}
+  </delete>
+<!--插入-->
+  <insert id="insert" parameterType="com.txdata.contract.domain.OANotify">
+    insert into oa_notify (
+    <include refid="oANotifyColumns" />
+      )
+    values (#{id}, #{type}, #{title},
+      #{content}, #{files}, #{status},
+      #{createBy}, #{createDate}, #{updateBy},
+      #{updateDate}, #{remarks}, #{delFlag}
+      )
+  </insert>
+  <!--更新-->
+  <update id="updateByPrimaryKey" parameterType="com.txdata.contract.domain.OANotify">
+    update oa_notify
+    set type = #{type},
+      title = #{title},
+      content = #{content},
+      files = #{files},
+      status = #{status},
+      create_by = #{createBy},
+      create_date = #{createDate},
+      update_by = #{updateBy},
+      update_date = #{updateDate},
+      remarks = #{remarks},
+      del_flag = #{delFlag}
+    where id = #{id}
+  </update>
+<!--通过主键查-->
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+      <include refid="oANotifyColumns" />
+    from oa_notify
+    where id = #{id}
+  </select>
+<!--通过流程实例id查询通知id-->
+  <select id="selectIdByInstanceId" parameterType="java.lang.String" resultType="java.lang.String">
+    select id
+    from oa_notify
+    where title = #{instanceId}
+  </select>
+<!--查所有-->
+  <select id="selectAll" resultMap="BaseResultMap">
+    select
+      <include refid="oANotifyColumns" />
+    from oa_notify
+  </select>
+</mapper>

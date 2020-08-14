@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.txdata.contract.dao.ContractRegInfoMapper">
+  <resultMap id="BaseResultMap" type="com.txdata.contract.domain.ContractRegInfo">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="entry_name" jdbcType="VARCHAR" property="entryName" />
+    <result column="contract_name" jdbcType="VARCHAR" property="contractName" />
+    <result column="contract_id" jdbcType="VARCHAR" property="contractId" />
+    <result column="sign_time" jdbcType="TIMESTAMP" property="signTime" />
+    <result column="first_person" jdbcType="VARCHAR" property="firstPerson" />
+    <result column="second_person" jdbcType="VARCHAR" property="secondPerson" />
+    <result column="trust_name" jdbcType="VARCHAR" property="trustName" />
+    <result column="count" jdbcType="DECIMAL" property="count" />
+    <result column="performance_bond" jdbcType="DECIMAL" property="performanceBond" />
+    <result column="service_time" jdbcType="TIMESTAMP" property="serviceTime" />
+    <result column="business_cost" jdbcType="DECIMAL" property="businessCost" />
+    <result column="custom_name" jdbcType="VARCHAR" property="customName" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="pass_time" jdbcType="TIMESTAMP" property="passTime" />
+    <result column="contract" jdbcType="VARCHAR" property="contract" />
+    <result column="del_flag" jdbcType="VARCHAR" property="delFlag" />
+    <result column="instance_id" jdbcType="VARCHAR" property="instanceId" />
+    <result column="seal_Flag" jdbcType="VARCHAR" property="sealFlag" />
+    <result column="approval_Flag" jdbcType="VARCHAR" property="approvalFlag" />
+  </resultMap>
+  <sql id="contractColumns">
+      id,
+      entry_name,contract_name,
+      contract_id,sign_time,first_person,
+      second_person,trust_name,count,
+      performance_bond,service_time,business_cost,
+      custom_name,phone,pass_time,
+      contract,del_flag,instance_id,
+      seal_Flag,approval_Flag
+  </sql>
+  <!--逻辑删除-->
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from contract_reg_info
+    where id = #{id}
+  </delete>
+  <!--新增-->
+  <insert id="insert" parameterType="com.txdata.contract.domain.ContractRegInfo">
+    insert into
+    contract_reg_info
+    (
+    <include refid="contractColumns" />
+      )+++++++++6
+    values (#{id}, #{entryName}, #{contractName},
+      #{contractId}, #{signTime}, #{firstPerson},
+      #{secondPerson}, #{trustName}, #{count},
+      #{performanceBond}, #{serviceTime}, #{businessCost},
+      #{customName}, #{phone}, #{passTime},
+      #{contract},#{delFlag},#{instanceId}
+      ,#{sealFlag},#{approvalFlag})
+  </insert>
+  <!--更新-->
+  <update id="updateByPrimaryKey" parameterType="com.txdata.contract.domain.ContractRegInfo">
+    update contract_reg_info
+    set entry_name = #{entryName},
+      contract_name = #{contractName},
+      contract_id = #{contractId},
+      sign_time = #{signTime},
+      first_person = #{firstPerson},
+      second_person = #{secondPerson},
+      trust_name = #{trustName},
+      count = #{count},
+      performance_bond = #{performanceBond},
+      service_time = #{serviceTime},
+      business_cost = #{businessCost},
+      custom_name = #{customName},
+      phone = #{phone},
+      pass_time = #{passTime},
+      contract = #{contract},
+      del_flag=#{delFlag},
+      instance_id=#{instanceId},
+      seal_Flag=#{sealFlag},
+      approval_Flag=#{approvalFlag}
+    where id = #{id}
+  </update>
+  <!--通过主键查询-->
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select id, entry_name, contract_name, contract_id, sign_time, first_person, second_person,
+    trust_name, count, performance_bond, service_time, business_cost, custom_name, phone, 
+    pass_time, contract,del_flag,instance_id,seal_Flag,approval_Flag
+    from contract_reg_info
+    where id = #{id}
+  </select>
+  <!--查询所有-->
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, entry_name, contract_name, contract_id, sign_time, first_person, second_person,
+    trust_name, count, performance_bond, service_time, business_cost, custom_name, phone, 
+    pass_time, contract,del_flag,instance_id,seal_Flag
+    from contract_reg_info
+    <where>
+      del_flag = '0'
+      <if test="id != null and id != ''">
+        AND id = #{id}
+      </if>
+      <if test="entryName != null and entryName != ''">
+        AND entryName = #{entryName}
+      </if>
+      <if test="contractName != null and contractName != ''">
+        AND contractName LIKE CONCAT('%',#{contractName},'%')
+      </if>
+    </where>
+  </select>
+<!--通过流程实例查询合同-->
+  <select id="selectContractByInstanceId" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+      <include refid="contractColumns" />
+    from contract_reg_info
+    where instance_id = #{instanceId} and del_flag = '0' and approval_Flag='0'
+  </select>
+
+  <!--分页查询-->
+  <select id="list" resultType="com.txdata.modules.project.vo.ProjectSummarizeVO"
+           parameterType="com.txdata.contract.domain.ContractRegInfo">
+    select
+    a.id, a.entry_name, a.contract_name, a.contract_id, a.sign_time, a.first_person, a.second_person,
+    a.trust_name, a.count, a.performance_bond, a.service_time, a.business_cost, a.custom_name, a.phone,
+    a.pass_time, a.contract,b.period_times, b.pay_money, b.pay_condition, b.other_condition, b.remark
+    FROM contract_reg_info a
+    LEFT JOIN pay_type b ON b.cid = a.id
+    <where>
+      a.del_flag = '0'
+      <if test="id != null and id != ''">
+        AND id = #{id}
+      </if>
+      <if test="entryName != null and entryName != ''">
+        AND entryName = #{entryName}
+      </if>
+      <if test="contractName != null and contractName != ''">
+        AND contractName LIKE CONCAT('%',#{contractName},'%')
+      </if>
+    </where>
+    ORDER BY a.sign_time DESC
+  </select>
+<!--通过userID查询角色-->
+  <select id="selectRoleByUserId"  parameterType="java.lang.String" resultType="java.lang.String">
+    select distinct role_sign
+    from sys_role r,sys_user u,sys_user_role ur
+    where #{userId}=ur.user_id and ur.role_id=r.id
+  </select>
+<!--通过合同id查询流程实例id-->
+  <select id="selectInstanceIdByContractId"  parameterType="java.lang.String" resultType="java.lang.String">
+    select  instance_id
+    from contract_reg_info
+    where id = #{contractId}
+  </select>
+</mapper>

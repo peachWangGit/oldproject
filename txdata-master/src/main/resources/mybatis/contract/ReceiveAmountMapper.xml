@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.txdata.contract.dao.ReceiveAmountMapper">
+  <resultMap id="BaseResultMap" type="com.txdata.contract.domain.ReceiveAmount">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="cid" jdbcType="VARCHAR" property="cid" />
+    <result column="receive_money" jdbcType="DECIMAL" property="receiveMoney" />
+    <result column="payback_bank" jdbcType="VARCHAR" property="paybackBank" />
+    <result column="payback_account" jdbcType="VARCHAR" property="paybackAccount" />
+    <result column="payback_time" jdbcType="TIMESTAMP" property="paybackTime" />
+    <result column="payback_src" jdbcType="VARCHAR" property="paybackSrc" />
+    <result column="del_flag" jdbcType="VARCHAR" property="delFlag" />
+  </resultMap>
+
+  <sql id="receiveAmountColumns">
+      id, cid, receive_money,
+      payback_bank, payback_account, payback_time,
+      payback_src,del_flag
+  </sql>
+
+  <!--物理删除-->
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from receive_amount
+    where id = #{id}
+  </delete>
+  <!--通过cid删除-->
+  <delete id="deleteByCid" parameterType="java.lang.String">
+    delete from receive_amount
+    where cid = #{cid}
+  </delete>
+  <!--新增-->
+  <insert id="insert" parameterType="com.txdata.contract.domain.ReceiveAmount">
+    insert into receive_amount (
+    <include refid="receiveAmountColumns" />
+    )
+    values (#{id}, #{cid}, #{receiveMoney},
+      #{paybackBank}, #{paybackAccount}, #{paybackTime},
+      #{paybackSrc},#{delFlag})
+  </insert>
+  <!--更新-->
+  <update id="updateByPrimaryKey" parameterType="com.txdata.contract.domain.ReceiveAmount">
+    update receive_amount
+    set cid = #{cid},
+      receive_money = #{receiveMoney},
+      payback_bank = #{paybackBank},
+      payback_account = #{paybackAccount},
+      payback_time = #{paybackTime},
+      payback_src = #{paybackSrcR},
+      del_flag=#{delFlag}
+    where id = #{id}
+  </update>
+  <!--通过主键查-->
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+      <include refid="receiveAmountColumns" />
+    from receive_amount
+    where id = #{id}
+  </select>
+<!--通过cid查询回款集合-->
+  <select id="selectByCid" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+      <include refid="receiveAmountColumns" />
+    from receive_amount
+    where cid = #{cid}
+  </select>
+  <!--查所有-->
+  <select id="selectAll" resultMap="BaseResultMap">
+    select
+      <include refid="receiveAmountColumns" />
+    from receive_amount
+  </select>
+</mapper>

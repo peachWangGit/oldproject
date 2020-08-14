@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.txdata.modules.reimburse.dao.ReimburseDAO">
+
+    <resultMap id="ReimburseReport" type="com.txdata.common.utils.SortedJSONObject">
+        <id property="ID" column="id"/>
+        <result property="报销单编号" column="number"/>
+        <result property="报销人" column="user"/>
+        <result property="报销时间" column="time"/>
+        <result property="报销类型" column="type"/>
+        <result property="项目名称" column="projectName"/>
+        <result property="报销总金额" column="allMoney"/>
+        <collection property="#报销明细" javaType="com.alibaba.fastjson.JSONArray" ofType="com.txdata.common.utils.SortedJSONObject">
+            <result property="费用类型" column="costType"/>
+            <result property="报销内容" column="content"/>
+            <result property="发生时间" column="happenDate"/>
+            <result property="出差天数" column="travelDays"/>
+            <result property="费用说明" column="remarks"/>
+            <result property="费用金额" column="money"/>
+        </collection>
+    </resultMap>
+
+    <select id="generateReimburseReport" resultMap="ReimburseReport">
+        SELECT t_reimburse.id                             id,
+               t_reimburse.number                         number,
+               sys_user.`name`                            `user`,
+               t_reimburse.time                           time,
+               t_reimburse.type                           type,
+               t_project.`name`                           projectName,
+               t_reimburse.allmoeny                       allMoney,
+               detail.costType                            costType,
+               detail.content                             content,
+               DATE_FORMAT(detail.happenDate, '%Y-%m-%d') happenDate,
+               t_reimburse.travel_days                    travelDays,
+               detail.remarks                             remarks,
+               detail.money
+        FROM t_reimburse
+                 INNER JOIN sys_user ON t_reimburse.`user` = sys_user.id
+                 INNER JOIN t_project ON t_reimburse.project_id = t_project.id
+                 LEFT JOIN (
+            SELECT t_travel_detail.reimburse_id,
+                   "出差交通费"                                 costType,
+                   "出差交通费"                                 content,
+                   t_travel_detail_happen_date.happen_date happenDate,
+                   t_reimburse.content                     remarks,
+                   t_travel_detail_money.money
+            FROM t_travel_detail
+                     INNER JOIN t_reimburse ON t_travel_detail.reimburse_id = t_reimburse.id
+                     INNER JOIN (
+                SELECT reimburse_id,
+                       sum(money) money
+                FROM t_travel_detail
+                GROUP BY reimburse_id
+            ) t_travel_detail_money ON t_travel_detail_money.reimburse_id = t_reimburse.id
+                     INNER JOIN (
+                SELECT reimburse_id,
+                       min(start_date) happen_date
+                FROM t_travel_detail
+                GROUP BY reimburse_id
+            ) t_travel_detail_happen_date ON t_travel_detail_happen_date.reimburse_id = t_reimburse.id
+            GROUP BY t_travel_detail.reimburse_id
+            UNION
+            SELECT t_travel_detail.reimburse_id,
+                   "打车费"                                   costType,
+                   "打车费"                                   content,
+                   t_travel_detail_happen_date.happen_date happenDate,
+                   t_reimburse.content                     remarks,
+                   t_reimburse.taxi_cost                   money
+            FROM t_travel_detail
+                     INNER JOIN t_reimburse ON t_travel_detail.reimburse_id = t_reimburse.id
+                     INNER JOIN (
+                SELECT reimburse_id,
+                       min(start_date) happen_date
+                FROM t_travel_detail
+                GROUP BY reimburse_id
+            ) t_travel_detail_happen_date ON t_travel_detail_happen_date.reimburse_id = t_reimburse.id
+            GROUP BY t_travel_detail.reimburse_id
+            UNION
+            SELECT t_travel_detail.reimburse_id,
+                   "住宿费"                                   costType,
+                   "住宿费"                                   content,
+                   t_travel_detail_happen_date.happen_date happenDate,
+                   t_reimburse.content                     remarks,
+                   t_reimburse.hotel_money                 money
+            FROM t_travel_detail
+                     INNER JOIN t_reimburse ON t_travel_detail.reimburse_id = t_reimburse.id
+                     INNER JOIN (
+                SELECT reimburse_id,
+                       min(start_date) happen_date
+                FROM t_travel_detail
+                GROUP BY reimburse_id
+            ) t_travel_detail_happen_date ON t_travel_detail_happen_date.reimburse_id = t_reimburse.id
+            GROUP BY t_travel_detail.reimburse_id
+            UNION
+            SELECT t_travel_detail.reimburse_id,
+                   "出差补助"                                  costType,
+                   "出差补助"                                  content,
+                   t_travel_detail_happen_date.happen_date happenDate,
+                   t_reimburse.content                     remarks,
+                   t_reimburse.travel_subsidy              money
+            FROM t_travel_detail
+                     INNER JOIN t_reimburse ON t_travel_detail.reimburse_id = t_reimburse.id
+                     INNER JOIN (
+                SELECT reimburse_id,
+                       min(start_date) happen_date
+                FROM t_travel_detail
+                GROUP BY reimburse_id
+            ) t_travel_detail_happen_date ON t_travel_detail_happen_date.reimburse_id = t_reimburse.id
+            GROUP BY t_travel_detail.reimburse_id
+            UNION
+            SELECT t_cost_detail.reimburse_id,
+                   t_cost_detail.type        costType,
+                   t_cost_detail.content,
+                   t_cost_detail.happen_date happenDate,
+                   t_cost_detail.remarks,
+                   t_cost_detail.money
+            FROM t_cost_detail
+        ) detail ON t_reimburse.id = detail.reimburse_id
+        WHERE t_reimburse.`status` = 4
+          AND t_reimburse.del_flag = '0'
+    </select>
+</mapper>
