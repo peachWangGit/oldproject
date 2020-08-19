@@ -27,7 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 /**
- * activiti控制层
+ * activiti控制层//activiti控制层
  */
 @Controller
 @RequestMapping("/activiti")
